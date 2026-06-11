@@ -17,9 +17,9 @@ const UI = (() => {
     root.innerHTML = '';
 
     renderBuildHeader(root, result.build);
-    renderTreeSummary(root, result.tree);
     renderSection(root, 'Skills', renderSkillRows(result.skills, targetVersion, league));
     renderSection(root, 'Equipment', renderItemRows(result.items, targetVersion, league));
+    renderTreeSection(root, result.tree, targetVersion);
   }
 
   function renderBuildHeader(root, build) {
@@ -50,17 +50,52 @@ const UI = (() => {
     `);
   }
 
-  function renderTreeSummary(root, tree) {
+  function renderTreeSection(root, tree, targetVersion) {
     const total = tree.both.size + tree.masterOnly.size + tree.mineOnly.size;
-    root.insertAdjacentHTML('beforeend', `
-      <div class="tree-summary">
-        <span class="ts-label">Passive Tree</span>
-        <span class="ts-item ts-both">&#9679; ${tree.both.size} shared</span>
-        <span class="ts-item ts-master">&#9679; ${tree.masterOnly.size} master-only</span>
-        <span class="ts-item ts-mine">&#9679; ${tree.mineOnly.size} mine-only</span>
-        <span class="ts-total">${total} total nodes compared</span>
+
+    const section = document.createElement('div');
+    section.className = 'result-section';
+    section.innerHTML = `
+      <p class="section-title">Passive Tree</p>
+      <div class="tree-card">
+        <div class="tree-stats">
+          <span class="ts-item ts-both">&#9679; ${tree.both.size} shared</span>
+          <span class="ts-item ts-ref">&#9679; ${tree.masterOnly.size} reference only</span>
+          <span class="ts-item ts-mine">&#9679; ${tree.mineOnly.size} mine only</span>
+          <span class="ts-total">${total} nodes compared</span>
+          <span class="tree-hint">drag to pan · scroll to zoom · double-click to reset</span>
+        </div>
+        <div class="tree-legend">
+          <span class="leg-item"><span class="leg-dot" style="background:#22c55e"></span>Both</span>
+          <span class="leg-item"><span class="leg-dot" style="background:#ef4444"></span>Reference only</span>
+          <span class="leg-item"><span class="leg-dot" style="background:#3b82f6"></span>Mine only</span>
+        </div>
+        <div class="tree-canvas-wrap">
+          <canvas id="treeCanvas" width="900" height="560"></canvas>
+          <div class="tree-loading" id="treeLoading">Loading tree data…</div>
+        </div>
       </div>
-    `);
+    `;
+    root.appendChild(section);
+
+    // Async: fetch tree data then render
+    loadAndRenderTree(tree, targetVersion);
+  }
+
+  async function loadAndRenderTree(tree, targetVersion) {
+    const canvas  = document.getElementById('treeCanvas');
+    const loading = document.getElementById('treeLoading');
+    if (!canvas) return;
+
+    try {
+      const treeData = await TreeData.load(targetVersion);
+      loading.style.display = 'none';
+      TreeRenderer.mount(canvas, treeData, tree.masterOnly, tree.mineOnly);
+    } catch (err) {
+      loading.textContent = 'Could not load tree data: ' + err.message;
+      loading.classList.add('tree-load-error');
+      console.error(err);
+    }
   }
 
   function renderSection(root, title, rows) {
