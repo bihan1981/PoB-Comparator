@@ -7,47 +7,62 @@ const TreeData = (() => {
 
   const cache = {};
 
-  // Fallback constants if not present in the JSON
-  const DEFAULT_ORBIT_RADII   = [0, 82, 162, 335, 493];
+  const DEFAULT_ORBIT_RADII    = [0, 82, 162, 335, 493];
   const DEFAULT_SKILLS_PER_ORBIT = [1, 6, 12, 12, 40];
 
-  // Version string from PoB targetVersion (e.g. "3_26") → semver directory name
-  function resolveVersion(targetVersion) {
-    if (!targetVersion) return { game: 'poe1', dir: '3.26.0' };
-    if (targetVersion.startsWith('2')) {
-      // PoE2 — use latest known tag
-      return { game: 'poe2', dir: '2.0.0' };
-    }
-    // PoE1: "3_26" → "3.26.0"
-    const parts = targetVersion.replace(/_/g, '.').split('.');
-    const maj = parts[0] || '3';
-    const min = parts[1] || '26';
-    return { game: 'poe1', dir: `${maj}.${min}.0` };
-  }
+  // Candidate URLs tried in order until one succeeds
+  function candidateUrls(targetVersion) {
+    const isPoe2 = targetVersion?.startsWith('2');
 
-  function getUrl(dir) {
-    // Try jsdelivr CDN (better CORS than raw.githubusercontent)
-    return `https://cdn.jsdelivr.net/gh/grindinggear/skilltree-export@master/${dir}/data.json`;
+    if (isPoe2) {
+      return [
+        'https://raw.githubusercontent.com/grindinggear/skilltree-export/master/data.json',
+        'https://raw.githubusercontent.com/grindinggear/skilltree-export/2.0.0/data.json',
+      ];
+    }
+
+    // PoE1 — derive semver from targetVersion ("3_26" → 3, 26)
+    const parts = (targetVersion ?? '3_26').replace(/_/g, '.').split('.');
+    const maj   = parseInt(parts[0]);
+    const min   = parseInt(parts[1] ?? '26');
+
+    // Only trust sane values; fall back to 3.26 otherwise
+    const safeMaj = (Number.isFinite(maj) && maj >= 2 && maj <= 9) ? maj : 3;
+    const safeMin = (Number.isFinite(min) && min >= 0)             ? min : 26;
+    const ver = `${safeMaj}.${safeMin}.0`;
+
+    return [
+      `https://raw.githubusercontent.com/grindinggear/skilltree-export/${ver}/data.json`,
+      `https://raw.githubusercontent.com/grindinggear/skilltree-export/master/data.json`,
+    ];
   }
 
   async function load(targetVersion) {
-    const { game, dir } = resolveVersion(targetVersion);
-    if (cache[game]) return cache[game];
+    const key = targetVersion?.startsWith('2') ? 'poe2' : 'poe1';
+    if (cache[key]) return cache[key];
 
-    const url = getUrl(dir);
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`Tree data fetch failed (${resp.status}) — ${url}`);
+    const urls = candidateUrls(targetVersion);
+    let lastErr;
 
-    const raw = await resp.json();
-    const processed = process(raw);
-    cache[game] = processed;
-    return processed;
+    for (const url of urls) {
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const raw = await resp.json();
+        const data = process(raw);
+        cache[key] = data;
+        return data;
+      } catch (e) {
+        lastErr = new Error(`Tree data fetch failed — ${url} — ${e.message}`);
+      }
+    }
+
+    throw lastErr;
   }
 
   function process(raw) {
-    // Pull orbit constants from data if available
-    const orbitRadii    = raw.constants?.orbitRadii    ?? raw.orbitRadii    ?? DEFAULT_ORBIT_RADII;
-    const skillsPerOrbit = raw.constants?.skillsPerOrbit ?? raw.skillsPerOrbit ?? DEFAULT_SKILLS_PER_ORBIT;
+    const orbitRadii     = raw.constants?.orbitRadii      ?? raw.orbitRadii      ?? DEFAULT_ORBIT_RADII;
+    const skillsPerOrbit = raw.constants?.skillsPerOrbit  ?? raw.skillsPerOrbit  ?? DEFAULT_SKILLS_PER_ORBIT;
 
     const nodes = {};
 
@@ -60,7 +75,6 @@ const TreeData = (() => {
       const radius     = orbitRadii[orbit]     ?? 0;
       const count      = skillsPerOrbit[orbit] ?? 1;
 
-      // Angle: 0 = top (−π/2), clockwise
       const angle = count > 1
         ? (2 * Math.PI * orbitIndex) / count - Math.PI / 2
         : -Math.PI / 2;
@@ -72,7 +86,6 @@ const TreeData = (() => {
       };
     }
 
-    // Compute bounding box for quick fitView
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     for (const n of Object.values(nodes)) {
       if (!Number.isFinite(n.x) || !Number.isFinite(n.y)) continue;
