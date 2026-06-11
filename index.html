@@ -16,15 +16,50 @@
     <p class="app-subtitle">Paste two Path of Building codes to compare builds — skills, gear, and passive tree.</p>
   </header>
 
+  <!-- How-to banner -->
+  <div class="howto-banner">
+    <div class="howto-steps">
+      <div class="howto-step">
+        <span class="step-num">1</span>
+        <span>Open <strong>Path of Building</strong> and load a build</span>
+      </div>
+      <div class="howto-arrow">→</div>
+      <div class="howto-step">
+        <span class="step-num">2</span>
+        <span>Click <strong>Export</strong> at the top → <strong>Copy</strong></span>
+      </div>
+      <div class="howto-arrow">→</div>
+      <div class="howto-step">
+        <span class="step-num">3</span>
+        <span>Paste the copied <strong>code</strong> below</span>
+      </div>
+    </div>
+    <div class="howto-accept">
+      <span class="accept-label">Accepted formats</span>
+      <span class="accept-tag">PoB export code <span class="accept-eg">e.g. eJydVclu2z…</span></span>
+      <span class="accept-tag">pastebin.com/xxxxxx</span>
+    </div>
+  </div>
+
   <!-- Input -->
   <div class="input-panel">
     <div class="input-col">
-      <label>Master / Reference Build</label>
-      <textarea id="masterInput" placeholder="Paste PoB export code or pastebin URL…" spellcheck="false"></textarea>
+      <label>
+        Master / Reference Build
+        <span class="label-hint">YouTuber or guide build</span>
+      </label>
+      <textarea id="masterInput"
+        placeholder="Paste PoB export code here…&#10;&#10;Looks like: eJydVclu2zAQ/Re…&#10;(long string of letters and numbers)"
+        spellcheck="false"></textarea>
     </div>
     <div class="input-col">
-      <label>My Build</label>
-      <textarea id="mineInput" placeholder="Paste PoB export code or pastebin URL…" spellcheck="false"></textarea>
+      <label>
+        My Build
+        <span class="label-hint">your current build</span>
+      </label>
+      <textarea id="mineInput"
+        placeholder="Paste PoB export code here…&#10;&#10;Looks like: eJydVclu2zAQ/Re…&#10;(long string of letters and numbers)"
+        spellcheck="false"></textarea>
     </div>
   </div>
 

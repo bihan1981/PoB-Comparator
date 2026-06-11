@@ -33,6 +33,72 @@ a:hover { text-decoration: underline; }
   margin-top: 3px;
 }
 
+/* ── How-to banner ──────────────────────────────────────────────────────── */
+.howto-banner {
+  background: #fff;
+  border: 1px solid #e8e8e3;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+}
+.howto-steps {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.howto-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #333;
+}
+.step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: #1a1a1a;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.howto-arrow { color: #ccc; font-size: 16px; }
+
+.howto-accept {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0ea;
+}
+.accept-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #aaa;
+}
+.accept-tag {
+  font-size: 12px;
+  background: #f5f5f0;
+  border: 1px solid #e0e0d8;
+  border-radius: 5px;
+  padding: 2px 10px;
+  color: #555;
+}
+.accept-eg {
+  color: #aaa;
+  font-family: 'SF Mono', Consolas, monospace;
+  margin-left: 4px;
+}
+
 /* ── Input panel ────────────────────────────────────────────────────────── */
 .input-panel {
   display: grid;
@@ -42,13 +108,22 @@ a:hover { text-decoration: underline; }
 }
 
 .input-col label {
-  display: block;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #888;
   margin-bottom: 6px;
+}
+.label-hint {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #bbb;
 }
 
 .input-col textarea {
