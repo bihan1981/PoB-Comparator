@@ -34,12 +34,12 @@ const UI = (() => {
     root.insertAdjacentHTML('beforeend', `
       <div class="build-header">
         <div class="bh-col bh-master">
-          <span class="bh-role">Master</span>
+          <span class="bh-role">Reference</span>
           <strong>${esc(m.className)}${m.ascendClassName ? ' / ' + esc(m.ascendClassName) : ''}</strong>
           <span class="bh-level">Lv ${m.level}</span>
           ${versionTag(m.targetVersion)}
         </div>
-        <div class="bh-vs">VS</div>
+        <div class="bh-vs">→</div>
         <div class="bh-col bh-mine">
           <span class="bh-role">Mine</span>
           <strong>${esc(n.className)}${n.ascendClassName ? ' / ' + esc(n.ascendClassName) : ''}</strong>
