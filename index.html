@@ -4,9 +4,56 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PoB Comparator</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <h1>PoB Comparator</h1>
-  <p>Coming soon.</p>
+
+<div class="app-wrap">
+
+  <!-- Header -->
+  <header class="app-header">
+    <h1>PoB Comparator</h1>
+    <p class="app-subtitle">Paste two Path of Building codes to compare builds — skills, gear, and passive tree.</p>
+  </header>
+
+  <!-- Input -->
+  <div class="input-panel">
+    <div class="input-col">
+      <label>Master / Reference Build</label>
+      <textarea id="masterInput" placeholder="Paste PoB export code or pastebin URL…" spellcheck="false"></textarea>
+    </div>
+    <div class="input-col">
+      <label>My Build</label>
+      <textarea id="mineInput" placeholder="Paste PoB export code or pastebin URL…" spellcheck="false"></textarea>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <select id="leagueSelect" class="league-select" title="League for trade links">
+      <option value="Standard">Standard</option>
+      <option value="Hardcore">Hardcore</option>
+      <option value="Settlers">Settlers</option>
+      <option value="Hardcore Settlers">HC Settlers</option>
+      <option value="Dawn of the Hunt">Dawn of the Hunt</option>
+    </select>
+    <button id="compareBtn" class="btn-primary">Compare</button>
+    <button id="clearBtn" class="btn-ghost">Clear</button>
+    <span class="ctrl-hint">Ctrl+Enter to compare</span>
+  </div>
+
+  <!-- Results -->
+  <div id="results"></div>
+
+</div>
+
+<!-- pako for zlib decompression -->
+<script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
+<script src="js/parser.js"></script>
+<script src="js/compare.js"></script>
+<script src="js/trade.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+
 </body>
 </html>
